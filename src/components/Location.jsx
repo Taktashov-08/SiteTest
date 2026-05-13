@@ -15,29 +15,27 @@ function Location() {
                 Address
               </p>
               <p className="mt-2 text-lg leading-7">
-                Rua Ferreira Borges 102
+                Terreiro Erva 20 R/C
                 <br />
-                3000-180 Coimbra, Portugal
+                3000-153 Coimbra
               </p>
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#e3b35f]">
-                Hours
+                Phone
               </p>
               <p className="mt-2 text-lg leading-7">
-                Tuesday to Sunday, 12:00-15:00
-                <br />
-                Dinner, 18:30-23:00
+                920 675 389
               </p>
             </div>
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#e3b35f]">
-                Reservations
+                Google rating
               </p>
               <p className="mt-2 text-lg leading-7">
-                +351 239 000 456
+                4.9 stars
                 <br />
-                ciao@lapiccolacoimbra.pt
+                53 reviews
               </p>
             </div>
           </div>

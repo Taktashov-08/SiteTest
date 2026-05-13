@@ -1,18 +1,18 @@
 const reviews = [
   {
     quote:
-      'The kind of place where dinner turns into a long conversation. The ragu was beautiful.',
-    name: 'Marta Silva',
+      'Best italian pizza in coimbra. Highly recommended',
+    name: 'Yousaf Mehmood',
   },
   {
     quote:
-      'Elegant without being fussy. Best pizza crust I have had in Coimbra.',
-    name: 'Joao Pereira',
+      'Great food, great service. The pizzas were like in Italy',
+    name: 'Joana Sá',
   },
   {
     quote:
-      'Warm service, proper espresso, and tiramisu worth ordering before dinner.',
-    name: 'Sofia Almeida',
+      'The pizza and pasta were some of the best we have had',
+    name: 'Kerry Sears',
   },
 ]
 
@@ -22,11 +22,15 @@ function Reviews() {
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-sm font-bold uppercase tracking-[0.32em] text-[#9f2f21]">
-            Guest notes
+            Google reviews
           </p>
           <h2 className="mt-4 font-serif text-4xl font-bold leading-tight text-[#173b2c] sm:text-5xl">
-            A neighborhood favorite for slow meals and good company.
+            4.9 stars from 53 reviews.
           </h2>
+          <p className="mt-4 text-lg leading-8 text-[#5d6a57]">
+            Guests praise the Italian pizza, warm service, and handmade pasta in
+            the heart of Coimbra.
+          </p>
         </div>
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
