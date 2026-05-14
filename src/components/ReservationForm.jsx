@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { isSupabaseConfigured, supabase } from '../lib/supabase.js'
 
 const initialForm = {
@@ -10,10 +10,17 @@ const initialForm = {
   numberOfGuests: '2',
 }
 
+function getTodayForInput() {
+  const today = new Date()
+  today.setMinutes(today.getMinutes() - today.getTimezoneOffset())
+  return today.toISOString().slice(0, 10)
+}
+
 function ReservationForm() {
   const [form, setForm] = useState(initialForm)
   const [status, setStatus] = useState('idle')
   const [message, setMessage] = useState('')
+  const today = useMemo(() => getTodayForInput(), [])
 
   const updateField = (event) => {
     const { name, value } = event.target
@@ -28,6 +35,13 @@ function ReservationForm() {
     setStatus('submitting')
     setMessage('')
 
+    const requestedAt = new Date(`${form.date}T${form.time}`)
+    if (Number.isNaN(requestedAt.getTime()) || requestedAt < new Date()) {
+      setStatus('error')
+      setMessage('Escolha uma data e hora futuras para o pedido de reserva.')
+      return
+    }
+
     if (!isSupabaseConfigured) {
       setStatus('error')
       setMessage(
@@ -37,9 +51,9 @@ function ReservationForm() {
     }
 
     const reservation = {
-      name: form.name,
-      email: form.email,
-      phone: form.phone,
+      name: form.name.trim(),
+      email: form.email.trim(),
+      phone: form.phone.trim(),
       date: form.date,
       time: form.time,
       number_of_guests: Number(form.numberOfGuests),
@@ -50,13 +64,21 @@ function ReservationForm() {
     if (error) {
       setStatus('error')
       setMessage(
-        'Não foi possível enviar a reserva. Tenta novamente dentro de instantes.',
+        `Nao foi possivel enviar a reserva. Detalhe tecnico: ${error.message}`,
       )
       return
     }
 
+    fetch('/api/notify-reservation', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reservation),
+    }).catch(() => {})
+
     setStatus('success')
-    setMessage('Reserva enviada com sucesso. Entraremos em contacto em breve.')
+    setMessage(
+      'Pedido enviado com sucesso. A reserva fica pendente ate confirmacao do restaurante.',
+    )
     setForm(initialForm)
   }
 
@@ -69,11 +91,11 @@ function ReservationForm() {
         Reservas
       </p>
       <h3 className="mt-3 font-serif text-3xl font-bold leading-tight">
-        Reserve a sua mesa
+        Pedir reserva
       </h3>
       <p className="mt-3 leading-7 text-[#5d6a57]">
-        Envie os seus dados e confirmamos a disponibilidade por telefone ou
-        email.
+        O cliente envia o pedido e o restaurante confirma depois no painel
+        privado. Nada fica automaticamente confirmado.
       </p>
 
       <div className="mt-7 grid gap-4 sm:grid-cols-2">
@@ -117,7 +139,7 @@ function ReservationForm() {
         </label>
 
         <label className="grid gap-2 text-sm font-bold text-[#173b2c]">
-          Número de pessoas
+          Numero de pessoas
           <input
             required
             min="1"
@@ -134,6 +156,7 @@ function ReservationForm() {
           Data
           <input
             required
+            min={today}
             type="date"
             name="date"
             value={form.date}
@@ -160,7 +183,7 @@ function ReservationForm() {
         disabled={status === 'submitting'}
         className="mt-6 w-full rounded-full bg-[#c9442f] px-6 py-3 text-sm font-bold uppercase tracking-[0.16em] text-white shadow-lg shadow-[#9f2f21]/20 transition hover:bg-[#a93224] disabled:cursor-not-allowed disabled:opacity-70"
       >
-        {status === 'submitting' ? 'A enviar...' : 'Enviar reserva'}
+        {status === 'submitting' ? 'A enviar...' : 'Enviar pedido'}
       </button>
 
       {message && (
