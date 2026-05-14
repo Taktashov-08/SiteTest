@@ -57,6 +57,7 @@ function ReservationForm() {
       date: form.date,
       time: form.time,
       number_of_guests: Number(form.numberOfGuests),
+      status: 'pending',
     }
 
     const { error } = await supabase.from('reservations').insert([reservation])
