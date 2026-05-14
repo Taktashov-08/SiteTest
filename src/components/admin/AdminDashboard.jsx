@@ -80,6 +80,35 @@ function AdminDashboard({ session }) {
     loadReservations()
   }, [loadReservations])
 
+  const notifyStatusChange = async (reservation, nextStatus) => {
+    if (!['accepted', 'rejected', 'cancelled'].includes(nextStatus)) {
+      return
+    }
+
+    const { data } = await supabase.auth.getSession()
+    const accessToken = data.session?.access_token
+
+    if (!accessToken) {
+      return
+    }
+
+    try {
+      await fetch('/api/notify-status-change', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          reservationId: reservation.id,
+          status: nextStatus,
+        }),
+      })
+    } catch {
+      // A reserva ja foi atualizada; email falhado nao deve bloquear o painel.
+    }
+  }
+
   const updateReservation = async (reservation, patch) => {
     setSavingId(reservation.id)
     setError('')
@@ -92,6 +121,9 @@ function AdminDashboard({ session }) {
     if (updateError) {
       setError(updateError.message)
     } else {
+      if (patch.status && patch.status !== reservation.status) {
+        await notifyStatusChange(reservation, patch.status)
+      }
       await loadReservations()
     }
 

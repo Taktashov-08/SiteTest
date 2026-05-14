@@ -27,10 +27,48 @@ VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
 RESEND_API_KEY=your-resend-key
 RESERVATION_NOTIFY_EMAIL=restaurant@example.com
 RESERVATION_FROM_EMAIL=Reservas <reservas@yourdomain.pt>
+SITE_URL=https://iltartufo-coimbra.vercel.app
+RESTAURANT_NAME=Il Tartufo
 ```
 
 As variaveis `RESEND_*` sao opcionais. Sem elas, as reservas continuam a ser
 guardadas no Supabase, mas nao e enviado email automatico ao dono.
+
+## Emails
+
+O fluxo de email esta preparado assim:
+
+1. Cliente envia pedido de reserva.
+2. O dono recebe email com os dados da reserva.
+3. O cliente recebe email a dizer que o pedido foi recebido e ainda esta
+   pendente.
+4. No painel admin, quando o estado muda para `accepted`, `rejected` ou
+   `cancelled`, o cliente recebe email automatico com a decisao.
+
+Para ativar em producao:
+
+1. Criar conta no Resend.
+2. Idealmente verificar um dominio proprio, por exemplo `iltartufocoimbra.pt`.
+3. Criar uma API key.
+4. Adicionar na Vercel:
+
+```bash
+npx vercel env add RESEND_API_KEY production
+npx vercel env add RESERVATION_NOTIFY_EMAIL production
+npx vercel env add RESERVATION_FROM_EMAIL production
+npx vercel env add SITE_URL production
+npx vercel env add RESTAURANT_NAME production
+```
+
+Depois de alterar variaveis na Vercel, fazer sempre novo deploy:
+
+```bash
+npx vercel --prod --yes
+```
+
+Nota: para enviar emails para clientes reais, o Resend deve usar um dominio
+verificado. O remetente `onboarding@resend.dev` serve apenas para testes muito
+limitados.
 
 ## Supabase
 
